@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "gabagoolcalc",
+	"version": "${version}",
+	"name": "Hypergolic Gabagool Calculator",
+	"description": "Zeigt in den Sacks an, wie viele Hypergolic Gabagool mit der vorhandenen Enchanted Coal craftbar sind, inkl. benoetigtem Sulphur und Very Crude Gabagool. Reine Anzeige, keine Automation.",
+	"authors": [
+		"leonardp"
+	],
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"de.leonard.gabagoolcalc.GabagoolCalcClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
