@@ -76,17 +76,19 @@ public final class BazaarApi {
 				.getAsJsonObject("products");
 
 		cached = new Prices(
-				buyPrice(products, "HYPERGOLIC_GABAGOOL"),
-				buyPrice(products, "VERY_CRUDE_GABAGOOL"),
-				buyPrice(products, "ENCHANTED_SULPHUR"));
+				// eigenes Sell Offer wird am Kopf des Sell-Offer-Buchs gefuellt
+				price(products, "HYPERGOLIC_GABAGOOL", "buyPrice"),
+				// Zutaten per Buy Order: Kopf des Kauforder-Buchs
+				price(products, "VERY_CRUDE_GABAGOOL", "sellPrice"),
+				price(products, "ENCHANTED_SULPHUR", "sellPrice"));
 	}
 
-	private static double buyPrice(JsonObject products, String productId) {
+	private static double price(JsonObject products, String productId, String field) {
 		JsonObject product = products.getAsJsonObject(productId);
 		if (product == null) {
 			throw new IllegalStateException("Bazaar kennt " + productId + " nicht");
 		}
-		return product.getAsJsonObject("quick_status").get("buyPrice").getAsDouble();
+		return product.getAsJsonObject("quick_status").get(field).getAsDouble();
 	}
 
 	private BazaarApi() {

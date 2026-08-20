@@ -96,9 +96,9 @@ public final class HypergolicOverlay {
 	}
 
 	/**
-	 * Sell Offer statt Sofortverkauf: gerechnet wird mit dem Kopf des
-	 * Sell-Offer-Buchs, also dem Preis, zu dem das eigene Angebot gefuellt wird.
-	 * Zutaten dagegen als Sofortkauf - das ist die vorsichtigere Annahme.
+	 * Beide Seiten geduldig gehandelt: Zutaten per Buy Order, Verkauf per Sell
+	 * Offer. Gerechnet wird jeweils mit dem Kopf des Buchs, an dem die eigene
+	 * Order gefuellt wird.
 	 */
 	private static void appendBazaar(List<Line> out, CraftResult result) {
 		if (!GabagoolConfig.bazaar) {
@@ -118,7 +118,9 @@ public final class HypergolicOverlay {
 		Profit profit = ProfitCalculator.calculate(basis.craftableAmount(), basis.neededVeryCrude(),
 				basis.neededEnchantedSulphur(), prices.get(), GabagoolConfig.bazaarTax);
 
-		out.add(new Line(preview ? "Bazaar (Sell Offer, pro 1x)" : "Bazaar (Sell Offer)", COLOR_TITLE));
+		out.add(new Line(preview
+				? "Bazaar (Buy Order / Sell Offer, pro 1x)"
+				: "Bazaar (Buy Order / Sell Offer)", COLOR_TITLE));
 		out.add(new Line("  Very Crude: -" + coins(profit.costVeryCrude()), COLOR_TEXT));
 		out.add(new Line("  Ench. Sulphur: -" + coins(profit.costEnchantedSulphur()), COLOR_TEXT));
 		out.add(new Line("  Verkauf: +" + coins(profit.revenue())

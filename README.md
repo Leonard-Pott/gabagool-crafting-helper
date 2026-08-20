@@ -16,11 +16,11 @@ Craftbar: 10x
   Very Crude Gabagool: 360
   Rest: 468 Enchanted Coal
   Uebrig: 2 Sulphuric Coal
-Bazaar (Sell Offer)
-  Very Crude: -29.38M
-  Ench. Sulphur: -1.55M
+Bazaar (Buy Order / Sell Offer)
+  Very Crude: -26.32M
+  Ench. Sulphur: -1.26M
   Verkauf: +55.99M (-0.70M Steuer)
-  Gewinn: 24.36M
+  Gewinn: 27.71M
 Bis zum naechsten: 732 Enchanted Coal
 ```
 
@@ -98,11 +98,11 @@ zerschiessen.
 
 Zeigt, was die Zutaten kosten und was am Ende haengen bleibt:
 
-- **Verkauf** wird als **Sell Offer** gerechnet, nicht als Sofortverkauf - also
-  mit dem Preis, zu dem dein eigenes Angebot gefuellt wird. Das sind aktuell
-  rund 590k mehr pro Stueck als beim Sofortverkauf.
-- **Zutaten** werden als Sofortkauf gerechnet, die vorsichtigere Annahme. Mit
-  Kauforders zahlst du weniger als angezeigt.
+Gerechnet wird durchgehend mit geduldigem Handel, also mit dem Preis, zu dem
+die eigene Order gefuellt wird - nicht mit Sofortkauf/Sofortverkauf:
+
+- **Verkauf** als **Sell Offer**: rund 590k mehr pro Stueck als Sofortverkauf.
+- **Zutaten** per **Buy Order**: rund 320k guenstiger pro Craft als Sofortkauf.
 - **Steuer**: 1.25% auf den Verkauf, per `bazaar.tax` anpassbar. Mit maximalem
   Bazaar-Flipper-Perk sind es 1.0%.
 - **Enchanted Coal taucht nicht auf**, weil sie selbst abgebaut und nicht
