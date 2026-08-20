@@ -19,11 +19,16 @@ rechnet. Kein Auto-Click, kein Auto-Craft, keine Packets.
 
 ## Rezept (pro 1x Hypergolic Gabagool, Pfad ueber Very Crude Gabagool)
 
-| Zutat | Menge |
-|---|---|
-| Enchanted Coal | 1204 |
-| Enchanted Sulphur | 76 (= 12040 Sulphur, aufgerundet) |
-| Very Crude Gabagool | 36 |
+| Zutat | 1. Craft | jeder weitere |
+|---|---|---|
+| Enchanted Coal | 1216 | 1200 |
+| Enchanted Sulphur | 76 | 75 |
+| Very Crude Gabagool | 36 | 36 |
+
+Sulphuric Coal entsteht nur in Vierergruppen (16 Enchanted Coal + 1 Enchanted
+Sulphur ergeben 4 Stueck). Fuer die 301 pro Hypergolic sind also 76 Crafts
+noetig, die 304 ergeben - die 3 uebrigen wandern in den naechsten Craft. Ueber
+4 Hypergolic hinweg mittelt sich das auf den Materialwert 1204 pro Stueck ein.
 
 Herleitung siehe `core/GabagoolRecipe.java`.
 

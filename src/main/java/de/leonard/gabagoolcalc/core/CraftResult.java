@@ -7,6 +7,8 @@ package de.leonard.gabagoolcalc.core;
  * @param neededVeryCrude  Very Crude Gabagool fuer craftableAmount Stueck
  * @param remainingCoal    Enchanted Coal, die uebrig bleibt
  * @param coalToNextCraft  fehlende Enchanted Coal bis zum naechsten Craft
+ * @param leftoverSulphuricCoal  Sulphuric Coal, die durch die Vierergruppen-Rundung
+ *                               uebrig bleiben und den naechsten Craft billiger machen
  */
 public record CraftResult(
 		long craftableAmount,
@@ -14,5 +16,6 @@ public record CraftResult(
 		long neededEnchantedSulphur,
 		long neededVeryCrude,
 		long remainingCoal,
-		long coalToNextCraft) {
+		long coalToNextCraft,
+		long leftoverSulphuricCoal) {
 }
