@@ -3,12 +3,17 @@ package de.leonard.gabagoolcalc.ui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.OptionalLong;
 
 import de.leonard.gabagoolcalc.GabagoolCalcClient;
 import de.leonard.gabagoolcalc.GabagoolConfig;
 import de.leonard.gabagoolcalc.core.CraftResult;
+import de.leonard.gabagoolcalc.bazaar.BazaarApi;
 import de.leonard.gabagoolcalc.core.GabagoolCalculator;
+import de.leonard.gabagoolcalc.core.Prices;
+import de.leonard.gabagoolcalc.core.Profit;
+import de.leonard.gabagoolcalc.core.ProfitCalculator;
 import de.leonard.gabagoolcalc.sacks.SackStock;
 
 import net.minecraft.client.Minecraft;
@@ -24,6 +29,8 @@ public final class HypergolicOverlay {
 	private static final int COLOR_TITLE = 0xFFFFAA00;
 	private static final int COLOR_TEXT = 0xFFFFFFFF;
 	private static final int COLOR_HINT = 0xFFAAAAAA;
+	private static final int COLOR_PROFIT = 0xFF55FF55;
+	private static final int COLOR_LOSS = 0xFFFF5555;
 	private static final int COLOR_BACKDROP = 0xC0101010;
 	private static final int PADDING = 4;
 
@@ -83,8 +90,55 @@ public final class HypergolicOverlay {
 				out.add(new Line("  Uebrig: " + num(result.leftoverSulphuricCoal()) + " Sulphuric Coal", COLOR_HINT));
 			}
 		}
+		appendBazaar(out, result);
 		out.add(new Line("Bis zum naechsten: " + num(result.coalToNextCraft()) + " Enchanted Coal", COLOR_HINT));
 		return List.copyOf(out);
+	}
+
+	/**
+	 * Sell Offer statt Sofortverkauf: gerechnet wird mit dem Kopf des
+	 * Sell-Offer-Buchs, also dem Preis, zu dem das eigene Angebot gefuellt wird.
+	 * Zutaten dagegen als Sofortkauf - das ist die vorsichtigere Annahme.
+	 */
+	private static void appendBazaar(List<Line> out, CraftResult result) {
+		if (!GabagoolConfig.bazaar) {
+			return;
+		}
+		BazaarApi.refreshIfStale();
+		Optional<Prices> prices = BazaarApi.prices();
+		if (prices.isEmpty()) {
+			out.add(new Line("Bazaar: laedt...", COLOR_HINT));
+			return;
+		}
+
+		boolean preview = result.craftableAmount() == 0;
+		CraftResult basis = preview
+				? GabagoolCalculator.calculate(GabagoolCalculator.enchantedCoalFor(1))
+				: result;
+		Profit profit = ProfitCalculator.calculate(basis.craftableAmount(), basis.neededVeryCrude(),
+				basis.neededEnchantedSulphur(), prices.get(), GabagoolConfig.bazaarTax);
+
+		out.add(new Line(preview ? "Bazaar (Sell Offer, pro 1x)" : "Bazaar (Sell Offer)", COLOR_TITLE));
+		out.add(new Line("  Very Crude: -" + coins(profit.costVeryCrude()), COLOR_TEXT));
+		out.add(new Line("  Ench. Sulphur: -" + coins(profit.costEnchantedSulphur()), COLOR_TEXT));
+		out.add(new Line("  Verkauf: +" + coins(profit.revenue())
+				+ " (-" + coins(profit.tax()) + " Steuer)", COLOR_TEXT));
+		out.add(new Line("  Gewinn: " + coins(profit.netProfit()),
+				profit.netProfit() >= 0 ? COLOR_PROFIT : COLOR_LOSS));
+	}
+
+	/** 5598610 -> "5.60M", damit die Zeile nicht ausfranst. */
+	private static String coins(long value) {
+		double abs = Math.abs(value);
+		String text;
+		if (abs >= 1_000_000) {
+			text = String.format(Locale.US, "%.2fM", abs / 1_000_000);
+		} else if (abs >= 1_000) {
+			text = String.format(Locale.US, "%.1fk", abs / 1_000);
+		} else {
+			text = String.format(Locale.US, "%.0f", abs);
+		}
+		return (value < 0 ? "-" : "") + text;
 	}
 
 	private static String num(long value) {

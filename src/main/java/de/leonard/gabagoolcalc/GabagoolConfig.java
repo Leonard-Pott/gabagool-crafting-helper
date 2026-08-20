@@ -23,6 +23,11 @@ public final class GabagoolConfig {
 	/** Dumpt den Inhalt jedes Sack-Screens ins Log. */
 	public static boolean debug = false;
 
+	/** Bazaar-Preise anzeigen (oeffentlicher Hypixel-Endpoint, kein API-Key). */
+	public static boolean bazaar = true;
+	/** Bazaar-Steuer auf Verkaeufe in Prozent. 1.25 normal, 1.0 mit maximalem Bazaar Flipper. */
+	public static double bazaarTax = 1.25;
+
 	/** Zuletzt gesehene Bestaende, -1 = noch nie gesehen. Ueberleben den Neustart. */
 	public static long stockEnchantedCoal = -1;
 	public static long stockSulphuricCoal = -1;
@@ -48,6 +53,8 @@ public final class GabagoolConfig {
 			overlayY = Integer.parseInt(props.getProperty("y", "6").trim());
 			screenTitle = props.getProperty("screen", "Enchanted Mining Sack");
 			debug = Boolean.parseBoolean(props.getProperty("debug", "false"));
+			bazaar = Boolean.parseBoolean(props.getProperty("bazaar", "true"));
+			bazaarTax = Double.parseDouble(props.getProperty("bazaar.tax", "1.25").trim());
 			stockEnchantedCoal = Long.parseLong(props.getProperty("stock.enchanted_coal", "-1").trim());
 			stockSulphuricCoal = Long.parseLong(props.getProperty("stock.sulphuric_coal", "-1").trim());
 			if (!props.containsKey("debug")) {
@@ -65,6 +72,8 @@ public final class GabagoolConfig {
 		props.setProperty("y", Integer.toString(overlayY));
 		props.setProperty("screen", screenTitle);
 		props.setProperty("debug", Boolean.toString(debug));
+		props.setProperty("bazaar", Boolean.toString(bazaar));
+		props.setProperty("bazaar.tax", Double.toString(bazaarTax));
 		props.setProperty("stock.enchanted_coal", Long.toString(stockEnchantedCoal));
 		props.setProperty("stock.sulphuric_coal", Long.toString(stockSulphuricCoal));
 		try {

@@ -16,6 +16,11 @@ Craftbar: 10x
   Very Crude Gabagool: 360
   Rest: 468 Enchanted Coal
   Uebrig: 2 Sulphuric Coal
+Bazaar (Sell Offer)
+  Very Crude: -29.38M
+  Ench. Sulphur: -1.55M
+  Verkauf: +55.99M (-0.70M Steuer)
+  Gewinn: 24.36M
 Bis zum naechsten: 732 Enchanted Coal
 ```
 
@@ -23,8 +28,13 @@ Bis zum naechsten: 732 Enchanted Coal
 
 Die Mod liest ausschliesslich die Item-Daten des GUIs, das du selbst geoeffnet
 hast, und zeigt eine Rechnung an. Kein Auto-Click, kein Auto-Craft, keine
-Packets, keine Netzwerkzugriffe. Sie stellt nur anders dar, was ohnehin auf
-deinem Bildschirm steht.
+Packets an den Server. Sie stellt nur anders dar, was ohnehin auf deinem
+Bildschirm steht.
+
+Einzige Ausnahme: fuer die Preise fragt sie alle 2 Minuten den oeffentlichen
+Bazaar-Endpoint `api.hypixel.net/v2/skyblock/bazaar` ab. Das ist reines Lesen
+oeffentlicher Marktdaten, ohne API-Key und ohne dass irgendetwas ueber dich
+oder deinen Account uebertragen wird. Abschaltbar mit `bazaar=false`.
 
 ## Installation
 
@@ -84,6 +94,20 @@ Die Zeile `Uebrig: N Sulphuric Coal` ist der Bestand nach allen moeglichen
 Crafts - der Teil, den man verkaufen kann, ohne sich den naechsten Craft zu
 zerschiessen.
 
+## Bazaar-Rechnung
+
+Zeigt, was die Zutaten kosten und was am Ende haengen bleibt:
+
+- **Verkauf** wird als **Sell Offer** gerechnet, nicht als Sofortverkauf - also
+  mit dem Preis, zu dem dein eigenes Angebot gefuellt wird. Das sind aktuell
+  rund 590k mehr pro Stueck als beim Sofortverkauf.
+- **Zutaten** werden als Sofortkauf gerechnet, die vorsichtigere Annahme. Mit
+  Kauforders zahlst du weniger als angezeigt.
+- **Steuer**: 1.25% auf den Verkauf, per `bazaar.tax` anpassbar. Mit maximalem
+  Bazaar-Flipper-Perk sind es 1.0%.
+- **Enchanted Coal taucht nicht auf**, weil sie selbst abgebaut und nicht
+  gekauft wird - sie waere in einer Gewinnrechnung ein fiktiver Posten.
+
 ## Config
 
 `config/gabagoolcalc.properties`, wird beim ersten Start angelegt und bei jedem
@@ -94,6 +118,8 @@ overlay=true
 x=6
 y=6
 screen=Enchanted Mining Sack
+bazaar=true
+bazaar.tax=1.25
 debug=false
 ```
 
@@ -105,8 +131,9 @@ debug=false
 
 ## Aufbau
 
-- `core/` - Rezept, Rechenlogik und Lore-Parsing, ohne Minecraft-Imports und
-  per JUnit getestet (`./gradlew test`)
+- `core/` - Rezept, Rechen- und Gewinnlogik, Lore-Parsing; ohne
+  Minecraft-Imports und per JUnit getestet (`./gradlew test`)
+- `bazaar/` - Preisabruf, asynchron und gecacht, blockiert nie den Render-Thread
 - `sacks/` - Screen-Erkennung, Auslesen der Item-Daten ueber die Skyblock-ID
   (`custom_data.id`, nicht ueber Display-Namen) und der gemerkte Bestand
 - `ui/` - Overlay-Rendering ueber `ScreenEvents`, ohne Mixin
