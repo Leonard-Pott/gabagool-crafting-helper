@@ -23,6 +23,10 @@ public final class GabagoolConfig {
 	/** Dumpt den Inhalt jedes Sack-Screens ins Log. */
 	public static boolean debug = false;
 
+	/** Zuletzt gesehene Bestaende, -1 = noch nie gesehen. Ueberleben den Neustart. */
+	public static long stockEnchantedCoal = -1;
+	public static long stockSulphuricCoal = -1;
+
 	private static Path file() {
 		return FabricLoader.getInstance().getConfigDir().resolve("gabagoolcalc.properties");
 	}
@@ -44,6 +48,8 @@ public final class GabagoolConfig {
 			overlayY = Integer.parseInt(props.getProperty("y", "6").trim());
 			screenTitle = props.getProperty("screen", "Enchanted Mining Sack");
 			debug = Boolean.parseBoolean(props.getProperty("debug", "false"));
+			stockEnchantedCoal = Long.parseLong(props.getProperty("stock.enchanted_coal", "-1").trim());
+			stockSulphuricCoal = Long.parseLong(props.getProperty("stock.sulphuric_coal", "-1").trim());
 			if (!props.containsKey("debug")) {
 				save(); // aeltere Config-Datei um neue Schluessel ergaenzen
 			}
@@ -59,6 +65,8 @@ public final class GabagoolConfig {
 		props.setProperty("y", Integer.toString(overlayY));
 		props.setProperty("screen", screenTitle);
 		props.setProperty("debug", Boolean.toString(debug));
+		props.setProperty("stock.enchanted_coal", Long.toString(stockEnchantedCoal));
+		props.setProperty("stock.sulphuric_coal", Long.toString(stockSulphuricCoal));
 		try {
 			Files.createDirectories(file().getParent());
 			try (OutputStream out = Files.newOutputStream(file())) {

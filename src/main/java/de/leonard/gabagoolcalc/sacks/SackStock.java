@@ -3,6 +3,7 @@ package de.leonard.gabagoolcalc.sacks;
 import java.util.OptionalLong;
 
 import de.leonard.gabagoolcalc.GabagoolCalcClient;
+import de.leonard.gabagoolcalc.GabagoolConfig;
 import de.leonard.gabagoolcalc.core.GabagoolRecipe;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -12,14 +13,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
  * Enchanted Coal steht im Enchanted Mining Sack, Sulphuric Coal im Nether Sack.
  * Jeder geoeffnete Sack aktualisiert, was er hergibt, der Rest bleibt stehen.
  *
- * ponytail: bewusst nur im Speicher. Nach einem Neustart ist der Wert wieder
- * unbekannt, bis der Nether Sack einmal offen war - reicht, weil man die Sacks
- * ohnehin staendig aufmacht.
+ * Die Werte liegen in der Config und ueberleben damit den Neustart: der Nether
+ * Sack muss nur einmal aufgemacht werden, danach rechnet der Mining Sack mit
+ * dem gemerkten Stand weiter. Gespeichert wird nur, wenn sich wirklich etwas
+ * geaendert hat.
  */
 public final class SackStock {
-
-	private static OptionalLong enchantedCoal = OptionalLong.empty();
-	private static OptionalLong sulphuricCoal = OptionalLong.empty();
 
 	public static void update(AbstractContainerScreen<?> screen) {
 		try {
@@ -31,18 +30,32 @@ public final class SackStock {
 	}
 
 	private static void scan(AbstractContainerScreen<?> screen) {
-		SacksItemParser.find(screen, GabagoolRecipe.ID_ENCHANTED_COAL, "Enchanted Coal")
-				.ifPresent(amount -> enchantedCoal = OptionalLong.of(amount));
-		SacksItemParser.find(screen, GabagoolRecipe.ID_SULPHURIC_COAL, "Sulphuric Coal")
-				.ifPresent(amount -> sulphuricCoal = OptionalLong.of(amount));
+		boolean changed = false;
+		OptionalLong coal = SacksItemParser.find(screen, GabagoolRecipe.ID_ENCHANTED_COAL, "Enchanted Coal");
+		if (coal.isPresent() && coal.getAsLong() != GabagoolConfig.stockEnchantedCoal) {
+			GabagoolConfig.stockEnchantedCoal = coal.getAsLong();
+			changed = true;
+		}
+		OptionalLong sulphuric = SacksItemParser.find(screen, GabagoolRecipe.ID_SULPHURIC_COAL, "Sulphuric Coal");
+		if (sulphuric.isPresent() && sulphuric.getAsLong() != GabagoolConfig.stockSulphuricCoal) {
+			GabagoolConfig.stockSulphuricCoal = sulphuric.getAsLong();
+			changed = true;
+		}
+		if (changed) {
+			GabagoolConfig.save();
+		}
 	}
 
 	public static OptionalLong enchantedCoal() {
-		return enchantedCoal;
+		return known(GabagoolConfig.stockEnchantedCoal);
 	}
 
 	public static OptionalLong sulphuricCoal() {
-		return sulphuricCoal;
+		return known(GabagoolConfig.stockSulphuricCoal);
+	}
+
+	private static OptionalLong known(long value) {
+		return value < 0 ? OptionalLong.empty() : OptionalLong.of(value);
 	}
 
 	private SackStock() {

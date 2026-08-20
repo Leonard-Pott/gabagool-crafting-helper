@@ -55,11 +55,14 @@ x=6
 y=6
 screen=Enchanted Mining Sack
 debug=false
+stock.enchanted_coal=-1
+stock.sulphuric_coal=-1
 ```
 
 `screen` ist der Teilstring des Screen-Titels, bei dem das Overlay erscheint.
 `debug=true` schreibt beim Oeffnen jedes Sack-Screens dessen kompletten Inhalt
 (Slot, Skyblock-ID, Count, Lore) ins Log - noetig, falls Hypixel das Format aendert.
+Die `stock.*`-Werte schreibt die Mod selbst, `-1` heisst "noch nie gesehen".
 
 ## Aufbau
 
@@ -67,8 +70,9 @@ debug=false
 - `sacks/SackStock` - gemerkte Bestaende ueber Screens hinweg. Es ist immer nur
   ein GUI offen, Enchanted Coal steht aber im Enchanted Mining Sack und
   Sulphuric Coal im Nether Sack. Jeder geoeffnete Sack aktualisiert, was er
-  hergibt; nur im Ziel-Screen wird gerendert. Nach einem Neustart ist der
-  Sulphuric-Wert unbekannt, bis der Nether Sack einmal offen war.
+  hergibt; nur im Ziel-Screen wird gerendert. Die Bestaende landen in der
+  Config und ueberleben den Neustart, der Nether Sack muss also nur einmal
+  aufgemacht werden.
 - `sacks/` - Screen-Erkennung ueber den Titel aus der Config und Auslesen der
   Item-Daten ueber die Skyblock-ID `custom_data.id` = `ENCHANTED_COAL`
   (Hypixel liefert die ExtraAttributes auf modernen Clients flach im custom_data)
