@@ -48,7 +48,7 @@ Fertige Jars gibt es unter [Releases](../../releases), oder selbst bauen:
 ./gradlew build
 ```
 
-Ergebnis: `build/libs/gabagoolcalc-1.0.0.jar`. Ein JDK musst du nicht
+Ergebnis: `build/libs/gabagoolcalc-1.1.0.jar`. Ein JDK musst du nicht
 installieren, Gradle laedt das noetige JDK 25 selbst nach.
 
 ## Wie gerechnet wird
