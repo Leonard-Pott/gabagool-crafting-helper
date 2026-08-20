@@ -80,9 +80,9 @@ public final class HypergolicOverlay {
 		if (result.craftableAmount() > 0) {
 			out.add(new Line("  Sulphur: " + num(result.neededSulphur()), COLOR_TEXT));
 			out.add(new Line("  Very Crude Gabagool: " + num(result.neededVeryCrude()), COLOR_TEXT));
-			out.add(new Line("  Rest-Coal: " + num(result.remainingCoal()), COLOR_HINT));
+			out.add(new Line("  Rest: " + num(result.remainingCoal()) + " Enchanted Coal", COLOR_HINT));
 		}
-		out.add(new Line("Bis zum naechsten: " + num(result.coalToNextCraft()) + " Coal", COLOR_HINT));
+		out.add(new Line("Bis zum naechsten: " + num(result.coalToNextCraft()) + " Enchanted Coal", COLOR_HINT));
 		return List.copyOf(out);
 	}
 
