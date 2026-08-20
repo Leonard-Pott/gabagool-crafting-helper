@@ -33,7 +33,7 @@ public final class HypergolicOverlay {
 	public void update(AbstractContainerScreen<?> screen) {
 		try {
 			OptionalLong coal = SacksItemParser.findEnchantedCoal(screen);
-			lines = coal.isPresent() ? build(coal.getAsLong()) : List.of();
+			lines = build(coal);
 		} catch (RuntimeException e) {
 			// Parsing kaputt (Hypixel aendert die GUI) -> Overlay ausblenden statt crashen
 			GabagoolCalcClient.LOGGER.debug("Sack-Parsing fehlgeschlagen", e);
@@ -62,7 +62,16 @@ public final class HypergolicOverlay {
 		}
 	}
 
-	private static List<Line> build(long coal) {
+	private static List<Line> build(OptionalLong coal) {
+		if (coal.isEmpty()) {
+			return List.of(
+					new Line("Hypergolic Gabagool", COLOR_TITLE),
+					new Line("Keine Enchanted Coal in diesem Sack gefunden", COLOR_HINT));
+		}
+		return craftLines(coal.getAsLong());
+	}
+
+	private static List<Line> craftLines(long coal) {
 		CraftResult result = GabagoolCalculator.calculate(coal);
 		List<Line> out = new ArrayList<>();
 		out.add(new Line("Hypergolic Gabagool", COLOR_TITLE));

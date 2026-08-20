@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalLong;
 
+import de.leonard.gabagoolcalc.GabagoolCalcClient;
 import de.leonard.gabagoolcalc.core.GabagoolRecipe;
 import de.leonard.gabagoolcalc.core.SackAmountParser;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
@@ -58,13 +60,37 @@ public final class SacksItemParser {
 		return OptionalLong.empty();
 	}
 
-	/** Skyblock-Item-ID aus ExtraAttributes, null wenn kein Skyblock-Item. */
+	/**
+	 * Skyblock-Item-ID, null wenn kein Skyblock-Item.
+	 *
+	 * Auf modernen Clients liefert Hypixel die ExtraAttributes flach im
+	 * custom_data, die ID liegt also direkt unter "id" (so macht es auch
+	 * Skyblocker). Der verschachtelte Pfad bleibt als Fallback drin.
+	 */
 	public static String skyblockId(ItemStack stack) {
 		CustomData data = stack.get(DataComponents.CUSTOM_DATA);
 		if (data == null) {
 			return null;
 		}
-		return data.copyTag().getCompoundOrEmpty("ExtraAttributes").getString("id").orElse(null);
+		CompoundTag tag = data.copyTag();
+		return tag.getString("id")
+				.or(() -> tag.getCompoundOrEmpty("ExtraAttributes").getString("id"))
+				.orElse(null);
+	}
+
+	/** Schreibt den kompletten Screen-Inhalt ins Log (config: debug=true). */
+	public static void dump(AbstractContainerScreen<?> screen) {
+		GabagoolCalcClient.LOGGER.info("[dump] Screen: '{}' mit {} Slots",
+				screen.getTitle().getString(), screen.getMenu().slots.size());
+		for (Slot slot : screen.getMenu().slots) {
+			ItemStack stack = slot.getItem();
+			if (stack.isEmpty()) {
+				continue;
+			}
+			GabagoolCalcClient.LOGGER.info("[dump] slot {} id={} count={} name='{}' lore={}",
+					slot.index, skyblockId(stack), stack.getCount(),
+					stack.getHoverName().getString(), lore(stack));
+		}
 	}
 
 	public static List<String> lore(ItemStack stack) {

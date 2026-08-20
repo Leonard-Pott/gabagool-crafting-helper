@@ -1,5 +1,6 @@
 package de.leonard.gabagoolcalc;
 
+import de.leonard.gabagoolcalc.sacks.SacksItemParser;
 import de.leonard.gabagoolcalc.sacks.SacksScreenDetector;
 import de.leonard.gabagoolcalc.ui.HypergolicOverlay;
 
@@ -20,10 +21,14 @@ public class GabagoolCalcClient implements ClientModInitializer {
 		GabagoolConfig.load();
 
 		ScreenEvents.AFTER_INIT.register((client, screen, width, height) -> {
-			if (!SacksScreenDetector.isSackScreen(screen)) {
+			GabagoolConfig.load();
+
+			if (GabagoolConfig.debug && SacksScreenDetector.isAnySackScreen(screen)) {
+				SacksItemParser.dump((AbstractContainerScreen<?>) screen);
+			}
+			if (!SacksScreenDetector.isTargetScreen(screen)) {
 				return;
 			}
-			GabagoolConfig.load();
 
 			AbstractContainerScreen<?> container = (AbstractContainerScreen<?>) screen;
 			HypergolicOverlay overlay = new HypergolicOverlay();

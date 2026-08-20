@@ -1,7 +1,7 @@
 # Hypergolic Gabagool Calculator
 
-Client-Mod fuer Hypixel Skyblock (Minecraft 26.1.2, Fabric). Beim Oeffnen eines
-Sack-Screens (`/sacks`, "Mining Sack", ...) blendet sie ein Overlay ein:
+Client-Mod fuer Hypixel Skyblock (Minecraft 26.1.2, Fabric). Beim Oeffnen des
+Enchanted Mining Sack blendet sie ein Overlay ein:
 
 ```
 Hypergolic Gabagool
@@ -47,11 +47,18 @@ Oeffnen eines Sack-Screens neu gelesen - kein Neustart noetig):
 overlay=true
 x=6
 y=6
+screen=Enchanted Mining Sack
+debug=false
 ```
+
+`screen` ist der Teilstring des Screen-Titels, bei dem das Overlay erscheint.
+`debug=true` schreibt beim Oeffnen jedes Sack-Screens dessen kompletten Inhalt
+(Slot, Skyblock-ID, Count, Lore) ins Log - noetig, falls Hypixel das Format aendert.
 
 ## Aufbau
 
 - `core/` - reine Rechen- und Parse-Logik, keine Minecraft-Imports, per JUnit getestet
-- `sacks/` - Screen-Erkennung (Titel enthaelt "sack") und Auslesen der Item-Daten
-  ueber die Skyblock-ID `ExtraAttributes.id` = `ENCHANTED_COAL`
+- `sacks/` - Screen-Erkennung ueber den Titel aus der Config und Auslesen der
+  Item-Daten ueber die Skyblock-ID `custom_data.id` = `ENCHANTED_COAL`
+  (Hypixel liefert die ExtraAttributes auf modernen Clients flach im custom_data)
 - `ui/` - Overlay-Rendering
