@@ -20,6 +20,13 @@ public final class GabagoolRecipe {
 	public static final int SULPHUR_PER_HYPERGOLIC = 12040;
 	public static final int VERY_CRUDE_PER_HYPERGOLIC = 36;
 
+	/**
+	 * 1x Enchanted Sulphur = 5x 32 Sulphur (Craft-Rezept), also 160 Sulphur.
+	 * 12040 / 160 = 75.25 -> aufgerundet 76 Enchanted Sulphur pro Hypergolic,
+	 * denn am Bazaar gibt es nur ganze Enchanted Sulphur.
+	 */
+	public static final int SULPHUR_PER_ENCHANTED_SULPHUR = 160;
+
 	/** Skyblock Item-IDs (ExtraAttributes.id), nicht Display-Namen. */
 	public static final String ID_ENCHANTED_COAL = "ENCHANTED_COAL";
 

@@ -7,7 +7,8 @@ Enchanted Mining Sack blendet sie ein Overlay ein:
 Hypergolic Gabagool
 Enchanted Coal: 12,345
 Craftbar: 10x
-  Sulphur: 120,400
+  Enchanted Sulphur: 753
+    (= 120,400 Sulphur)
   Very Crude Gabagool: 360
   Rest-Coal: 305
 Bis zum naechsten: 899 Coal
@@ -21,7 +22,7 @@ rechnet. Kein Auto-Click, kein Auto-Craft, keine Packets.
 | Zutat | Menge |
 |---|---|
 | Enchanted Coal | 1204 |
-| Sulphur (roh) | 12040 |
+| Enchanted Sulphur | 76 (= 12040 Sulphur, aufgerundet) |
 | Very Crude Gabagool | 36 |
 
 Herleitung siehe `core/GabagoolRecipe.java`.
