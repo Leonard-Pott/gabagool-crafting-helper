@@ -1,53 +1,93 @@
 # Hypergolic Gabagool Calculator
 
-Client-Mod fuer Hypixel Skyblock (Minecraft 26.1.2, Fabric). Beim Oeffnen des
-Enchanted Mining Sack blendet sie ein Overlay ein:
+Client-Mod fuer **Hypixel Skyblock** auf **Minecraft 26.1.2 / Fabric**.
+
+Beim Oeffnen des Enchanted Mining Sack rechnet sie aus, wie viele Hypergolic
+Gabagool du mit deiner vorhandenen Enchanted Coal craften kannst, und was du
+dafuer noch am Bazaar brauchst:
 
 ```
 Hypergolic Gabagool
-Enchanted Coal: 12,345
+Enchanted Coal: 12,500
+Sulphuric Coal: 3
 Craftbar: 10x
-  Enchanted Sulphur: 753
-    (= 120,400 Sulphur)
+  Enchanted Sulphur: 752
+    (= 120,320 Sulphur)
   Very Crude Gabagool: 360
-  Rest-Coal: 305
-Bis zum naechsten: 899 Coal
+  Rest: 468 Enchanted Coal
+  Uebrig: 2 Sulphuric Coal
+Bis zum naechsten: 732 Enchanted Coal
 ```
 
-Reine Anzeige: liest nur die ohnehin sichtbaren Item-Daten des offenen GUIs und
-rechnet. Kein Auto-Click, kein Auto-Craft, keine Packets.
+## Keine Automation
 
-## Rezept (pro 1x Hypergolic Gabagool, Pfad ueber Very Crude Gabagool)
+Die Mod liest ausschliesslich die Item-Daten des GUIs, das du selbst geoeffnet
+hast, und zeigt eine Rechnung an. Kein Auto-Click, kein Auto-Craft, keine
+Packets, keine Netzwerkzugriffe. Sie stellt nur anders dar, was ohnehin auf
+deinem Bildschirm steht.
 
-| Zutat | 1. Craft | jeder weitere |
-|---|---|---|
-| Enchanted Coal | 1216 | 1200 |
-| Enchanted Sulphur | 76 | 75 |
-| Very Crude Gabagool | 36 | 36 |
+## Installation
 
-Sulphuric Coal entsteht nur in Vierergruppen (16 Enchanted Coal + 1 Enchanted
-Sulphur ergeben 4 Stueck). Fuer die 301 pro Hypergolic sind also 76 Crafts
-noetig, die 304 ergeben - die 3 uebrigen wandern in den naechsten Craft. Ueber
-4 Hypergolic hinweg mittelt sich das auf den Materialwert 1204 pro Stueck ein.
+Braucht **nur Fabric Loader >= 0.19.3 und Fabric API** auf Minecraft 26.1.2 -
+kein bestimmtes Modpack, keine anderen Mods. Das Jar in den `mods/`-Ordner der
+Instanz legen und Minecraft neu starten.
 
-Herleitung siehe `core/GabagoolRecipe.java`.
-
-## Bauen
+Fertige Jars gibt es unter [Releases](../../releases), oder selbst bauen:
 
 ```
 ./gradlew build
 ```
 
-Ergebnis: `build/libs/gabagoolcalc-1.0.0.jar`. Das Jar in den `mods/`-Ordner der
-Instanz legen (oder in der Modrinth App ueber "Add content" -> "From file").
-Braucht nur Fabric Loader >= 0.19.3 und Fabric API.
+Ergebnis: `build/libs/gabagoolcalc-1.0.0.jar`. Ein JDK musst du nicht
+installieren, Gradle laedt das noetige JDK 25 selbst nach.
 
-Dev-Client zum Testen: `./gradlew runClient`
+## Wie gerechnet wird
+
+Pfad ueber Very Crude Gabagool:
+
+```
+Hypergolic Gabagool = 12x Heavy Gabagool + 1x Sulphuric Coal
+Heavy Gabagool      = 24x Fuel Gabagool  + 1x Sulphuric Coal
+Fuel Gabagool       = 8x Sulphuric Coal  + 1x Very Crude Gabagool -> 8x Fuel
+Sulphuric Coal      = 16x Enchanted Coal + 1x Enchanted Sulphur   -> 4x Sulphuric
+```
+
+Macht **301 Sulphuric Coal** und **36 Very Crude Gabagool** pro Hypergolic.
+
+Sulphuric Coal entsteht aber nur in Vierergruppen. Fuer 301 Stueck sind 76
+Crafts noetig, die 304 ergeben - der erste Hypergolic kostet damit **1216**
+Enchanted Coal, nicht die oft genannten 1204. Die 3 uebrigen Sulphuric Coal
+wandern in den naechsten Craft, der dadurch nur noch 1200 kostet. Ueber vier
+Stueck hinweg mittelt es sich auf 1204 pro Stueck ein.
+
+| | 1. Craft | 2. | 3. | 4. |
+|---|---|---|---|---|
+| Enchanted Coal | 1216 | 1200 | 1200 | 1200 |
+| Enchanted Sulphur | 76 | 75 | 75 | 75 |
+| Very Crude Gabagool | 36 | 36 | 36 | 36 |
+
+Angezeigt wird Enchanted Sulphur statt rohem Sulphur, weil man es so am Bazaar
+kauft (1x Enchanted Sulphur = 160x Sulphur). Alle Rezepte sind gegen das
+NEU-Item-Repo geprueft.
+
+## Nether Sack
+
+Sulphuric Coal, die schon im Nether Sack liegt, muss nicht mehr gecraftet
+werden und senkt den Bedarf entsprechend. Da immer nur ein GUI offen ist,
+merkt sich die Mod den Bestand: Nether Sack einmal aufmachen, danach rechnet
+der Mining Sack damit weiter - auch nach einem Neustart.
+
+Solange der Nether Sack noch nie offen war, steht `Sulphuric Coal: ?` statt
+einer stillen 0. Gerechnet wird dann mit 0, angezeigt wird also nie zu viel.
+
+Die Zeile `Uebrig: N Sulphuric Coal` ist der Bestand nach allen moeglichen
+Crafts - der Teil, den man verkaufen kann, ohne sich den naechsten Craft zu
+zerschiessen.
 
 ## Config
 
-`config/gabagoolcalc.properties` (wird beim ersten Start angelegt, wird bei jedem
-Oeffnen eines Sack-Screens neu gelesen - kein Neustart noetig):
+`config/gabagoolcalc.properties`, wird beim ersten Start angelegt und bei jedem
+Oeffnen eines Sacks neu gelesen. Kein Neustart noetig.
 
 ```properties
 overlay=true
@@ -55,25 +95,22 @@ x=6
 y=6
 screen=Enchanted Mining Sack
 debug=false
-stock.enchanted_coal=-1
-stock.sulphuric_coal=-1
 ```
 
-`screen` ist der Teilstring des Screen-Titels, bei dem das Overlay erscheint.
-`debug=true` schreibt beim Oeffnen jedes Sack-Screens dessen kompletten Inhalt
-(Slot, Skyblock-ID, Count, Lore) ins Log - noetig, falls Hypixel das Format aendert.
-Die `stock.*`-Werte schreibt die Mod selbst, `-1` heisst "noch nie gesehen".
+- `screen` - Teilstring des Screen-Titels, bei dem das Overlay erscheint
+- `debug=true` - schreibt beim Oeffnen jedes Sacks dessen kompletten Inhalt
+  (Slot, Skyblock-ID, Count, Lore) ins Log. Noetig, falls Hypixel das Format
+  aendert und Zahlen fehlen.
+- die `stock.*`-Werte schreibt die Mod selbst, `-1` heisst "noch nie gesehen"
 
 ## Aufbau
 
-- `core/` - reine Rechen- und Parse-Logik, keine Minecraft-Imports, per JUnit getestet
-- `sacks/SackStock` - gemerkte Bestaende ueber Screens hinweg. Es ist immer nur
-  ein GUI offen, Enchanted Coal steht aber im Enchanted Mining Sack und
-  Sulphuric Coal im Nether Sack. Jeder geoeffnete Sack aktualisiert, was er
-  hergibt; nur im Ziel-Screen wird gerendert. Die Bestaende landen in der
-  Config und ueberleben den Neustart, der Nether Sack muss also nur einmal
-  aufgemacht werden.
-- `sacks/` - Screen-Erkennung ueber den Titel aus der Config und Auslesen der
-  Item-Daten ueber die Skyblock-ID `custom_data.id` = `ENCHANTED_COAL`
-  (Hypixel liefert die ExtraAttributes auf modernen Clients flach im custom_data)
-- `ui/` - Overlay-Rendering
+- `core/` - Rezept, Rechenlogik und Lore-Parsing, ohne Minecraft-Imports und
+  per JUnit getestet (`./gradlew test`)
+- `sacks/` - Screen-Erkennung, Auslesen der Item-Daten ueber die Skyblock-ID
+  (`custom_data.id`, nicht ueber Display-Namen) und der gemerkte Bestand
+- `ui/` - Overlay-Rendering ueber `ScreenEvents`, ohne Mixin
+
+## Lizenz
+
+MIT, siehe [LICENSE](LICENSE).
