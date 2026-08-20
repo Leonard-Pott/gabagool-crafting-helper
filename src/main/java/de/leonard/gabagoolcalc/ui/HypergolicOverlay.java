@@ -9,12 +9,11 @@ import de.leonard.gabagoolcalc.GabagoolCalcClient;
 import de.leonard.gabagoolcalc.GabagoolConfig;
 import de.leonard.gabagoolcalc.core.CraftResult;
 import de.leonard.gabagoolcalc.core.GabagoolCalculator;
-import de.leonard.gabagoolcalc.sacks.SacksItemParser;
+import de.leonard.gabagoolcalc.sacks.SackStock;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 /**
  * Text-Overlay fuer einen offenen Sack-Screen. Reine Anzeige.
@@ -30,15 +29,8 @@ public final class HypergolicOverlay {
 
 	private List<Line> lines = List.of();
 
-	public void update(AbstractContainerScreen<?> screen) {
-		try {
-			OptionalLong coal = SacksItemParser.findEnchantedCoal(screen);
-			lines = build(coal);
-		} catch (RuntimeException e) {
-			// Parsing kaputt (Hypixel aendert die GUI) -> Overlay ausblenden statt crashen
-			GabagoolCalcClient.LOGGER.debug("Sack-Parsing fehlgeschlagen", e);
-			lines = List.of();
-		}
+	public void update() {
+		lines = build(SackStock.enchantedCoal(), SackStock.sulphuricCoal());
 	}
 
 	public void render(GuiGraphicsExtractor graphics) {
@@ -62,20 +54,25 @@ public final class HypergolicOverlay {
 		}
 	}
 
-	private static List<Line> build(OptionalLong coal) {
+	private static List<Line> build(OptionalLong coal, OptionalLong sulphuric) {
 		if (coal.isEmpty()) {
 			return List.of(
 					new Line("Hypergolic Gabagool", COLOR_TITLE),
 					new Line("Keine Enchanted Coal in diesem Sack gefunden", COLOR_HINT));
 		}
-		return craftLines(coal.getAsLong());
+		return craftLines(coal.getAsLong(), sulphuric);
 	}
 
-	private static List<Line> craftLines(long coal) {
-		CraftResult result = GabagoolCalculator.calculate(coal);
+	private static List<Line> craftLines(long coal, OptionalLong sulphuric) {
+		CraftResult result = GabagoolCalculator.calculate(coal, sulphuric.orElse(0));
 		List<Line> out = new ArrayList<>();
 		out.add(new Line("Hypergolic Gabagool", COLOR_TITLE));
 		out.add(new Line("Enchanted Coal: " + num(coal), COLOR_TEXT));
+		if (sulphuric.isPresent()) {
+			out.add(new Line("Sulphuric Coal: " + num(sulphuric.getAsLong()), COLOR_TEXT));
+		} else {
+			out.add(new Line("Sulphuric Coal: ? (Nether Sack oeffnen)", COLOR_HINT));
+		}
 		out.add(new Line("Craftbar: " + num(result.craftableAmount()) + "x", COLOR_TITLE));
 		if (result.craftableAmount() > 0) {
 			out.add(new Line("  Enchanted Sulphur: " + num(result.neededEnchantedSulphur()), COLOR_TEXT));

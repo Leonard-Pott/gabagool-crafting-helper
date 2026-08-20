@@ -97,6 +97,33 @@ class GabagoolCalculatorTest {
 	}
 
 	@Test
+	void vorhandeneSulphuricCoalSenkenDenBedarf() {
+		// mit 3 Sulphuric Coal aus dem Nether Sack reichen die 1204 auf einmal
+		CraftResult r = GabagoolCalculator.calculate(1204, 3);
+		assertEquals(1, r.craftableAmount());
+		assertEquals(75, r.neededEnchantedSulphur());
+		assertEquals(4, r.remainingCoal());
+		assertEquals(2, r.leftoverSulphuricCoal());
+	}
+
+	@Test
+	void vorratAlleineReicht() {
+		CraftResult r = GabagoolCalculator.calculate(0, 301);
+		assertEquals(1, r.craftableAmount());
+		assertEquals(0, r.neededEnchantedSulphur());
+		assertEquals(0, r.leftoverSulphuricCoal());
+		assertEquals(1216, r.coalToNextCraft());
+	}
+
+	@Test
+	void vorratWirdNichtDoppeltGezaehlt() {
+		// 301 Vorrat + 1216 Coal (= nochmal 304) reichen fuer genau 2
+		CraftResult r = GabagoolCalculator.calculate(1216, 301);
+		assertEquals(2, r.craftableAmount());
+		assertEquals(3, r.leftoverSulphuricCoal());
+	}
+
+	@Test
 	void rezeptKonstantenPassenZusammen() {
 		assertEquals(GabagoolRecipe.ENCHANTED_COAL_PER_HYPERGOLIC,
 				GabagoolRecipe.SULPHURIC_COAL_PER_HYPERGOLIC

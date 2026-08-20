@@ -1,5 +1,6 @@
 package de.leonard.gabagoolcalc;
 
+import de.leonard.gabagoolcalc.sacks.SackStock;
 import de.leonard.gabagoolcalc.sacks.SacksItemParser;
 import de.leonard.gabagoolcalc.sacks.SacksScreenDetector;
 import de.leonard.gabagoolcalc.ui.HypergolicOverlay;
@@ -23,18 +24,26 @@ public class GabagoolCalcClient implements ClientModInitializer {
 		ScreenEvents.AFTER_INIT.register((client, screen, width, height) -> {
 			GabagoolConfig.load();
 
-			if (GabagoolConfig.debug && SacksScreenDetector.isAnySackScreen(screen)) {
-				SacksItemParser.dump((AbstractContainerScreen<?>) screen);
+			if (!SacksScreenDetector.isAnySackScreen(screen)) {
+				return;
 			}
+			AbstractContainerScreen<?> container = (AbstractContainerScreen<?>) screen;
+
+			if (GabagoolConfig.debug) {
+				SacksItemParser.dump(container);
+			}
+
+			// Jeder Sack aktualisiert, was er hergibt: Enchanted Coal steckt im
+			// Mining Sack, Sulphuric Coal im Nether Sack.
+			SackStock.update(container);
+			ScreenEvents.afterTick(screen).register(s -> SackStock.update(container));
+
 			if (!SacksScreenDetector.isTargetScreen(screen)) {
 				return;
 			}
-
-			AbstractContainerScreen<?> container = (AbstractContainerScreen<?>) screen;
 			HypergolicOverlay overlay = new HypergolicOverlay();
-			overlay.update(container);
-
-			ScreenEvents.afterTick(screen).register(s -> overlay.update(container));
+			overlay.update();
+			ScreenEvents.afterTick(screen).register(s -> overlay.update());
 			ScreenEvents.afterExtract(screen).register((s, graphics, mouseX, mouseY, delta) -> overlay.render(graphics));
 		});
 	}

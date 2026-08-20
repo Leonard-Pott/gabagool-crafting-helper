@@ -64,6 +64,11 @@ debug=false
 ## Aufbau
 
 - `core/` - reine Rechen- und Parse-Logik, keine Minecraft-Imports, per JUnit getestet
+- `sacks/SackStock` - gemerkte Bestaende ueber Screens hinweg. Es ist immer nur
+  ein GUI offen, Enchanted Coal steht aber im Enchanted Mining Sack und
+  Sulphuric Coal im Nether Sack. Jeder geoeffnete Sack aktualisiert, was er
+  hergibt; nur im Ziel-Screen wird gerendert. Nach einem Neustart ist der
+  Sulphuric-Wert unbekannt, bis der Nether Sack einmal offen war.
 - `sacks/` - Screen-Erkennung ueber den Titel aus der Config und Auslesen der
   Item-Daten ueber die Skyblock-ID `custom_data.id` = `ENCHANTED_COAL`
   (Hypixel liefert die ExtraAttributes auf modernen Clients flach im custom_data)

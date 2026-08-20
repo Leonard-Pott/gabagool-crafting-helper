@@ -38,6 +38,7 @@ public final class GabagoolRecipe {
 
 	/** Skyblock Item-IDs (custom_data.id), nicht Display-Namen. */
 	public static final String ID_ENCHANTED_COAL = "ENCHANTED_COAL";
+	public static final String ID_SULPHURIC_COAL = "SULPHURIC_COAL";
 
 	private GabagoolRecipe() {
 	}

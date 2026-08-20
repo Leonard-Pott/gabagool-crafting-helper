@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.OptionalLong;
 
 import de.leonard.gabagoolcalc.GabagoolCalcClient;
-import de.leonard.gabagoolcalc.core.GabagoolRecipe;
 import de.leonard.gabagoolcalc.core.SackAmountParser;
 
 import net.minecraft.core.component.DataComponents;
@@ -23,25 +22,23 @@ import net.minecraft.world.item.component.ItemLore;
  */
 public final class SacksItemParser {
 
-	private static final String LABEL = "Enchanted Coal";
-
 	/**
-	 * Primaerweg: Item mit ExtraAttributes.id == ENCHANTED_COAL, Menge aus der
+	 * Primaerweg: Item mit passender Skyblock-ID, Menge aus der
 	 * "Stored:"-Lore (Stack-Count ist bei Sacks nur Deko).
 	 * Fallback: Sack-Uebersicht, die den Bestand nur als Lore-Zeile des Sack-Items
 	 * fuehrt - dort gibt es kein eigenes Item und damit keine NBT-ID.
 	 */
-	public static OptionalLong findEnchantedCoal(AbstractContainerScreen<?> screen) {
+	public static OptionalLong find(AbstractContainerScreen<?> screen, String skyblockId, String label) {
 		List<Slot> slots = screen.getMenu().slots;
 
 		for (Slot slot : slots) {
 			ItemStack stack = slot.getItem();
-			if (stack.isEmpty() || !GabagoolRecipe.ID_ENCHANTED_COAL.equals(skyblockId(stack))) {
+			if (stack.isEmpty() || !skyblockId.equals(skyblockId(stack))) {
 				continue;
 			}
 			// ponytail: erster Treffer gewinnt. Mehrere Enchanted-Coal-Stacks in einem
 			// Screen aufsummieren, falls das im normalen Inventar mal gebraucht wird.
-			OptionalLong stored = SackAmountParser.findAmount(lore(stack), LABEL);
+			OptionalLong stored = SackAmountParser.findAmount(lore(stack), label);
 			return stored.isPresent() ? stored : OptionalLong.of(stack.getCount());
 		}
 
@@ -51,7 +48,7 @@ public final class SacksItemParser {
 				continue;
 			}
 			for (String line : lore(stack)) {
-				OptionalLong amount = SackAmountParser.labelledAmount(line, LABEL);
+				OptionalLong amount = SackAmountParser.labelledAmount(line, label);
 				if (amount.isPresent()) {
 					return amount;
 				}
