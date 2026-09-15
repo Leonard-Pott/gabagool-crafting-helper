@@ -40,5 +40,6 @@ replay_*.log
 *.jfr
 
 # Arbeitsnotizen, nicht im Repo
+AGENTS.md
 CLAUDE.md
 PLAN.md
